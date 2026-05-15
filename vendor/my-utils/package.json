@@ -1,0 +1,9 @@
+{
+  "name": "my-utils",
+  "version": "1.0.0",
+  "description": "Local file: dep — copied into node_modules by Bun (not symlinked).",
+  "main": "index.js",
+  "dependencies": {
+    "tslib": "^2.8.0"
+  }
+}

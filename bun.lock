@@ -1,0 +1,67 @@
+// Bun lockfile — text JSONC format (Bun 1.2+).
+// Generated for probe: bun-local-sources-probe.
+// Pattern bundle: local-file-dep + local-link-dep.
+//
+// This lockfile exercises two distinct local-source protocols:
+//   file:  — package is COPIED into node_modules at install time (my-utils).
+//   link:  — package is SYMLINKED into node_modules at install time (my-helpers).
+//
+// Both appear in the workspaces section as local path references.
+// The key Mend assertion: both are source="local", but ONLY link: is editable=true.
+// If Mend flattens them — both editable=true or both editable=false — the
+// file:/link: distinction is lost and the probe registers a failure.
+{
+  "lockfileVersion": 1,
+
+  // workspaces: root-only project.
+  // Both local deps appear here with their source protocol preserved verbatim.
+  "workspaces": {
+    // Root workspace — declares both local deps.
+    "": {
+      "name": "bun-local-sources-probe",
+      "dependencies": {
+        // file: source type — Bun copies this package. Not a symlink.
+        // Expected: source="local", editable=false (or field absent).
+        "my-utils": "file:./vendor/my-utils",
+
+        // link: source type — Bun symlinks this package. Editable in-place.
+        // Expected: source="local", editable=true.
+        "my-helpers": "link:./vendor/my-helpers",
+      },
+    },
+
+    // Local package: vendor/my-utils — sourced via file: protocol.
+    // Bun adds a workspaces entry for file: deps so the lockfile records
+    // the resolved name, version, and transitive dependencies.
+    // "file:" packages ARE listed in the workspaces section (unlike link:).
+    "vendor/my-utils": {
+      "name": "my-utils",
+      "dependencies": {
+        // tslib is a real transitive dep pulled in by my-utils.
+        // It must appear under my-utils in the dep tree, NOT as a root direct dep.
+        "tslib": "^2.8.0",
+      },
+    },
+
+    // Local package: vendor/my-helpers — sourced via link: protocol.
+    // Bun also adds a workspaces entry for link: deps.
+    // No declared dependencies — dep tree for my-helpers has no children.
+    "vendor/my-helpers": {
+      "name": "my-helpers",
+    },
+  },
+
+  // packages: resolved registry entries for external (npm) deps only.
+  // Local packages (my-utils, my-helpers) are NOT listed here —
+  // they are resolved from the workspaces section above.
+  // Only the transitive dep tslib (from my-utils) appears as a registry package.
+  "packages": {
+
+    // tslib — transitive dep of my-utils (file: local package).
+    // This is the only registry-sourced package in the entire dep tree.
+    // Source type: local-file-dep (pattern) — the PARENT is local/file:, but
+    // tslib itself comes from the npm registry.
+    "tslib": ["tslib@2.8.1", {}, "sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w=="],
+
+  },
+}

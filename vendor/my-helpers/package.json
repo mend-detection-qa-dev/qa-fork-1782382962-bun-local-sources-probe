@@ -1,0 +1,6 @@
+{
+  "name": "my-helpers",
+  "version": "1.0.0",
+  "description": "Local link: dep — symlinked into node_modules by Bun (editable in-place).",
+  "main": "index.js"
+}

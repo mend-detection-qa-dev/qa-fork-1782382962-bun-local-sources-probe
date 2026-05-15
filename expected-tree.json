@@ -1,0 +1,91 @@
+{
+  "schema_version": "1.0",
+  "pm": "bun",
+  "pm_version_tested": "1.2.0",
+  "source_file": "bun.lock",
+  "generated_at": "2026-05-15T00:00:00+00:00",
+  "root": {
+    "name": "bun-local-sources-probe",
+    "version": "0.1.0",
+    "dependencies": [
+      "my-utils",
+      "my-helpers"
+    ]
+  },
+  "packages": {
+    "my-utils": {
+      "version": "1.0.0",
+      "source": "local",
+      "group": "main",
+      "editable": false,
+      "dependencies": [
+        "tslib"
+      ],
+      "source_detail": {
+        "protocol": "file:",
+        "path": "vendor/my-utils"
+      }
+    },
+    "my-helpers": {
+      "version": "1.0.0",
+      "source": "local",
+      "group": "main",
+      "editable": true,
+      "dependencies": [],
+      "source_detail": {
+        "protocol": "link:",
+        "path": "vendor/my-helpers"
+      }
+    },
+    "tslib": {
+      "version": "2.8.1",
+      "source": "registry",
+      "group": "main",
+      "dependencies": [],
+      "source_detail": {
+        "registry": "https://registry.npmjs.org"
+      }
+    }
+  },
+  "dependency_counts": {
+    "direct": 2,
+    "transitive": 1,
+    "total": 3,
+    "notes": [
+      "Direct deps: root -> my-utils (local/file:, editable=false) and root -> my-helpers (local/link:, editable=true).",
+      "Transitive deps: my-utils -> tslib@2.8.1 (registry). tslib is the only registry-sourced package.",
+      "my-helpers has no dependencies — its sub-tree is empty.",
+      "Mend may flatten all local deps to editable=true or editable=false. Either direction is a failure: the editable flag is the ONLY observable difference between file: and link: in the dep tree."
+    ]
+  },
+  "local_source_edges": [
+    {
+      "name": "my-utils",
+      "protocol": "file:",
+      "path": "vendor/my-utils",
+      "editable": false,
+      "install_behavior": "copy — Bun copies the package directory into node_modules at install time. Changes to vendor/my-utils do NOT reflect automatically."
+    },
+    {
+      "name": "my-helpers",
+      "protocol": "link:",
+      "path": "vendor/my-helpers",
+      "editable": true,
+      "install_behavior": "symlink — Bun creates a symlink in node_modules pointing to vendor/my-helpers. Changes to vendor/my-helpers reflect immediately without reinstall."
+    }
+  ],
+  "project_metadata": {
+    "source_file": "bun.lock",
+    "groups": [
+      "main"
+    ]
+  },
+  "warnings": [
+    "Bun is NOT a UA-supported resolver. Bun has no entry in Mend's install-tool list and does not appear in the UA javascript.md resolver file. Detection relies entirely on static bun.lock parsing (text JSONC, Bun 1.2+ format). The UA will likely fall back to the npm resolver; that resolver does not understand file:/link: protocols in bun.lock format.",
+    "CRITICAL — editable flag distinguishes file: from link:. Both my-utils (file:) and my-helpers (link:) map to source='local'. The ONLY correct differentiator is editable=false for file: and editable=true for link:. If Mend emits editable=true for both, or editable=false for both, or omits editable for both, the bundled-pattern failure mode is triggered.",
+    "tslib@2.8.1 is a transitive dep reachable only through my-utils (the file: local package). If tslib is missing from Mend output, that is a false negative — Mend failed to follow the dep chain through a local file: package into its registry transitive.",
+    "my-utils appears in the bun.lock workspaces section (not the packages section). A Mend parser that only reads the packages object will silently drop my-utils and its tslib transitive.",
+    "my-helpers appears in the bun.lock workspaces section (not the packages section). Same risk as my-utils: a packages-only parser will drop it.",
+    "Bun's file: protocol is semantically closer to npm's 'file:' (which creates a copy at install time). The link: protocol is Bun-specific (yarn compat) and creates a symlink. npm-resolver fallback does not understand link: — if the UA falls back to npm ls, link: will either be dropped or reported as a registry dep with a missing resolution URL."
+  ]
+}

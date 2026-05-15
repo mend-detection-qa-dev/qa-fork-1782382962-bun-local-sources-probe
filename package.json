@@ -1,0 +1,9 @@
+{
+  "name": "bun-local-sources-probe",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "my-utils": "file:./vendor/my-utils",
+    "my-helpers": "link:./vendor/my-helpers"
+  }
+}
